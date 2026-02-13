@@ -85,7 +85,7 @@ const updateProduct = async (req, res, next) => {
 const deleteProduct = async (req, res, next) => {
     try {
         await ProductService.deleteProduct(req.params.id);
-        res.json({ message: 'Producto eliminado correctamente (soft delete)' });
+        res.json({ message: 'Producto eliminado definitivamente de la base de datos' });
     } catch (error) {
         next(error);
     }

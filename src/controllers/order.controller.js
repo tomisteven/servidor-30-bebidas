@@ -14,10 +14,10 @@ exports.createOrder = async (req, res) => {
             };
         }));
 
-        let userId = req.user._id;
+        let userId = req.user ? req.user._id : null;
 
-        // Permitir que el admin asigne el pedido a otro usuario
-        if (req.user.role === 'admin' && req.body.userId) {
+        // Permitir que el admin asigne el pedido a otro usuario (solo si el admin está autenticado)
+        if (req.user && req.user.role === 'admin' && req.body.userId) {
             userId = req.body.userId;
         }
 
@@ -29,12 +29,14 @@ exports.createOrder = async (req, res) => {
 
         const order = await Order.create(orderData);
 
-        // Opcional: Sumar puntos al usuario según la compra
-        const pointsToEarn = Math.floor(req.body.total / 100); // 1 punto por cada 100 unidades de moneda
-        if (pointsToEarn > 0) {
-            await User.findByIdAndUpdate(req.user._id, {
-                $inc: { points: pointsToEarn }
-            });
+        // Opcional: Sumar puntos al usuario según la compra (solo si el usuario está registrado)
+        if (req.user) {
+            const pointsToEarn = Math.floor(req.body.total / 100);
+            if (pointsToEarn > 0) {
+                await User.findByIdAndUpdate(req.user._id, {
+                    $inc: { points: pointsToEarn }
+                });
+            }
         }
 
         res.status(201).json({

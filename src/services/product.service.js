@@ -91,7 +91,7 @@ class ProductService {
 
     async getProductBySlug(slug, isAdmin = false) {
         let query = Product.findOne({ slug, isDeleted: false });
-        
+
         if (isAdmin) {
             query = query.select('+precioCosto');
         }
@@ -111,7 +111,7 @@ class ProductService {
         if (updateData.precio !== undefined || updateData.precioCosto !== undefined) {
             const currentPrice = product.precio;
             const currentCost = product.precioCosto; // Este campo tiene select:false, cuidado si no se trajo
-            
+
             // Si el precio o costo cambian, guardamos el historial
             // Nota: Para que product.precioCosto esté disponible, debemos asegurarnos de haberlo traído
             // o confiar en que si vamos a actualizar precioCosto, ya tenemos el nuevo valor.
@@ -150,8 +150,8 @@ class ProductService {
     }
 
     async deleteProduct(id) {
-        // Soft delete
-        const product = await Product.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+        // Hard delete (eliminación real de la base de datos)
+        const product = await Product.findByIdAndDelete(id);
         if (!product) throw new Error('Producto no encontrado');
         return product;
     }
@@ -196,18 +196,18 @@ class ProductService {
 
         let periods = [];
         const history = product.priceHistory || [];
-        
+
         // Ordenar historial por fecha ascendente
         const sortedHistory = [...history].sort((a, b) => new Date(a.date) - new Date(b.date));
 
         // 1. Primer período (desde creación hasta primer cambio)
         // Si no hay historial, es desde creación hasta hoy con precio actual (o inicial si no se cambió nunca)
         let startDate = product.createdAt;
-        
+
         for (let i = 0; i < sortedHistory.length; i++) {
             const entry = sortedHistory[i];
             const endDate = entry.date;
-            
+
             periods.push({
                 price: entry.price,
                 costPrice: entry.costPrice,
@@ -257,7 +257,7 @@ class ProductService {
                 // revenue: sales.length > 0 ? sales[0].totalRevenue : 0 // Opcional
             };
         }));
-        
+
         // Retornamos invertido para mostrar del más reciente al más antiguo
         return stats.reverse();
     }
