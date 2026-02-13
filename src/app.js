@@ -11,8 +11,12 @@ const settingsRoutes = require('./routes/settings.routes');
 const supplierRoutes = require('./routes/supplier.routes');
 const reportRoutes = require('./routes/report.routes');
 const errorHandler = require('./middlewares/errorHandler');
+const connectDB = require('./config/db');
 
 dotenv.config();
+// Conectar a la base de datos inmediatamente
+connectDB();
+Burbank
 
 const app = express();
 
