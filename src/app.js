@@ -27,7 +27,6 @@ app.use(async (req, res, next) => {
         next();
     }
 });
-Burbank
 
 // Middlewares
 app.use(cors({
