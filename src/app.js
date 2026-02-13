@@ -14,11 +14,20 @@ const errorHandler = require('./middlewares/errorHandler');
 const connectDB = require('./config/db');
 
 dotenv.config();
-// Conectar a la base de datos inmediatamente
-connectDB();
-Burbank
 
 const app = express();
+
+// Middleware de conexión a Base de Datos (Serverless friendly)
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        console.error('DB Connection Error in Middleware');
+        next();
+    }
+});
+Burbank
 
 // Middlewares
 app.use(cors({
