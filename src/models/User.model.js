@@ -37,6 +37,28 @@ const userSchema = new mongoose.Schema({
     plainPassword: {
         type: String,
         select: false // Solo se muestra cuando se solicita explícitamente
+    },
+    // Nuevos campos para Comercios
+    commerceName: {
+        type: String,
+        trim: true
+    },
+    address: {
+        type: String,
+        trim: true
+    },
+    phone: {
+        type: String,
+        trim: true
+    },
+    locality: {
+        type: String,
+        trim: true
+    },
+    commerceType: {
+        type: String,
+        enum: ['Almacen', 'Kiosco', 'Supermercado', 'Revendedor', 'Otro', 'Particular'],
+        default: 'Particular'
     }
 }, {
     timestamps: true

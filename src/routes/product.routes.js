@@ -3,6 +3,8 @@ const { body } = require('express-validator');
 const productController = require('../controllers/product.controller');
 const validateRequest = require('../middlewares/validateRequest');
 
+const { protect, authorize, optionalProtect } = require('../middlewares/auth.middleware');
+
 const router = express.Router();
 
 const productValidation = [
@@ -18,9 +20,10 @@ router.post('/', productValidation, productController.createProduct);
 router.get('/', productController.getAllProducts);
 router.get('/categories', productController.getCategories);
 router.post('/categories', productController.createCategory);
-router.get('/:slug', productController.getProductBySlug);
+router.get('/:slug', optionalProtect, productController.getProductBySlug);
 router.put('/:id', productController.updateProduct);
 router.delete('/:id', productController.deleteProduct);
 router.patch('/:id/status', productController.toggleStatus);
+router.get('/:id/history-stats', protect, authorize('admin'), productController.getHistoryStats);
 
 module.exports = router;

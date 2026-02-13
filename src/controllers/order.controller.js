@@ -6,9 +6,25 @@ const User = require('../models/User.model');
 // @access  Private
 exports.createOrder = async (req, res) => {
     try {
+        const itemsWithCost = await Promise.all(req.body.items.map(async (item) => {
+            const product = await require('../models/Product.model').findById(item.product);
+            return {
+                ...item,
+                costPrice: product ? product.precioCosto : 0
+            };
+        }));
+
+        let userId = req.user._id;
+
+        // Permitir que el admin asigne el pedido a otro usuario
+        if (req.user.role === 'admin' && req.body.userId) {
+            userId = req.body.userId;
+        }
+
         const orderData = {
             ...req.body,
-            user: req.user._id
+            items: itemsWithCost,
+            user: userId
         };
 
         const order = await Order.create(orderData);

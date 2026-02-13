@@ -57,17 +57,46 @@ const productSchema = new mongoose.Schema({
         unique: true,
         trim: true
     },
-    // Precio base (por unidad)
+    // Precio base (actualmente Precio Pack)
     precio: {
         type: Number,
         required: [true, 'El precio base es obligatorio'],
         min: 0
     },
+    unidadesPorPack: {
+        type: Number,
+        default: 1,
+        min: 1
+    },
+    precioUnidad: {
+        type: Number,
+        min: 0,
+        default: 0
+    },
+    precioPallet: {
+        type: Number, // Precio por Pack en la compra por Pallet
+        min: 0,
+        default: 0
+    },
+    packsPorPallet: {
+        type: Number,
+        default: 1,
+        min: 1
+    },
     precioCard: {
         type: Number,
         min: 0
     },
-    stock: {
+    precioCosto: {
+        type: Number,
+        default: 0,
+        min: 0,
+        select: false // Por seguridad, no lo enviamos por defecto al cliente
+    },
+    stock: { // Stock en unidades totales? O en packs?
+             // Usually stock is tracked in base units (bottles) or packs. 
+             // Given the complexity, let's assume stock is just a number for now, user didn't specify unit of stock.
+             // I'll keep it as is.
         type: Number,
         required: true,
         default: 0,
@@ -107,7 +136,16 @@ const productSchema = new mongoose.Schema({
             unitsPerPallet: { type: Number, default: 0 },
             packsPerPallet: { type: Number, default: 0 }
         }
-    }
+    },
+    // Historial de Precios
+    priceHistory: [{
+        price: Number,
+        costPrice: Number,
+        date: {
+            type: Date,
+            default: Date.now
+        }
+    }]
 }, {
     timestamps: true
 });

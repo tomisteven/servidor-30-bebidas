@@ -65,7 +65,8 @@ const getCategories = async (req, res, next) => {
 
 const getProductBySlug = async (req, res, next) => {
     try {
-        const product = await ProductService.getProductBySlug(req.params.slug);
+        const isAdmin = req.user && req.user.role === 'admin';
+        const product = await ProductService.getProductBySlug(req.params.slug, isAdmin);
         res.json(product);
     } catch (error) {
         next(error);
@@ -99,6 +100,15 @@ const toggleStatus = async (req, res, next) => {
     }
 };
 
+const getHistoryStats = async (req, res, next) => {
+    try {
+        const stats = await ProductService.getHistoryStats(req.params.id);
+        res.json(stats);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createProduct,
     createCategory,
@@ -107,5 +117,6 @@ module.exports = {
     getCategories,
     updateProduct,
     deleteProduct,
-    toggleStatus
+    toggleStatus,
+    getHistoryStats
 };

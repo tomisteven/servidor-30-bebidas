@@ -8,6 +8,10 @@ const orderItemSchema = new mongoose.Schema({
     },
     nombre: String,
     precio: Number,
+    costPrice: { // Costo al momento de la venta para reportes de ganancia
+        type: Number,
+        default: 0
+    },
     quantity: Number,
     unitType: {
         type: String,

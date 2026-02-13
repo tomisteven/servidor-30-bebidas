@@ -27,7 +27,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 exports.register = async (req, res, next) => {
     try {
-        const { nombre, email, password } = req.body;
+        const { nombre, email, password, commerceName, address, phone, locality, commerceType } = req.body;
 
         // Verificar si el usuario ya existe
         const userExists = await User.findOne({ email });
@@ -42,7 +42,12 @@ exports.register = async (req, res, next) => {
         const user = await User.create({
             nombre,
             email,
-            password
+            password,
+            commerceName,
+            address,
+            phone,
+            locality,
+            commerceType
         });
 
         sendTokenResponse(user, 201, res);
@@ -104,7 +109,12 @@ exports.getMe = async (req, res, next) => {
 exports.updateProfile = async (req, res, next) => {
     try {
         const fieldsToUpdate = {
-            nombre: req.body.nombre
+            nombre: req.body.nombre,
+            commerceName: req.body.commerceName,
+            address: req.body.address,
+            phone: req.body.phone,
+            locality: req.body.locality,
+            commerceType: req.body.commerceType
         };
 
         const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
@@ -171,7 +181,7 @@ exports.updateUserPoints = async (req, res, next) => {
 // @access  Private/Admin
 exports.createUser = async (req, res, next) => {
     try {
-        const { nombre, email, password, role = 'user' } = req.body;
+        const { nombre, email, password, role = 'user', commerceName, address, phone, locality, commerceType } = req.body;
 
         // Verificar si el usuario ya existe
         const userExists = await User.findOne({ email });
@@ -187,7 +197,12 @@ exports.createUser = async (req, res, next) => {
             email,
             password,
             role,
-            plainPassword: password // Guardar copia para referencia del admin
+            plainPassword: password, // Guardar copia para referencia del admin
+            commerceName,
+            address,
+            phone,
+            locality,
+            commerceType
         });
 
         res.status(201).json({
@@ -204,13 +219,24 @@ exports.createUser = async (req, res, next) => {
 // @access  Private/Admin
 exports.updateUser = async (req, res, next) => {
     try {
-        const { nombre, email, role, isActive } = req.body;
+        const { nombre, email, role, isActive, commerceName, address, phone, locality, commerceType, password } = req.body;
 
         const updateData = {};
         if (nombre) updateData.nombre = nombre;
         if (email) updateData.email = email;
         if (role) updateData.role = role;
         if (typeof isActive === 'boolean') updateData.isActive = isActive;
+        if (commerceName) updateData.commerceName = commerceName;
+        if (address) updateData.address = address;
+        if (phone) updateData.phone = phone;
+        if (locality) updateData.locality = locality;
+        if (commerceType) updateData.commerceType = commerceType;
+        if (password) {
+            // Si se envía password, la encriptamos y guardamos la plana
+            const salt = await require('bcryptjs').genSalt(10);
+            updateData.password = await require('bcryptjs').hash(password, salt);
+            updateData.plainPassword = password;
+        }
 
         const user = await User.findByIdAndUpdate(
             req.params.id,

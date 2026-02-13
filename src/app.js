@@ -9,6 +9,7 @@ const discountRoutes = require('./routes/discount.routes');
 const orderRoutes = require('./routes/order.routes');
 const settingsRoutes = require('./routes/settings.routes');
 const supplierRoutes = require('./routes/supplier.routes');
+const reportRoutes = require('./routes/report.routes');
 const errorHandler = require('./middlewares/errorHandler');
 
 dotenv.config();
@@ -36,6 +37,7 @@ app.use('/api/discounts', discountRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/suppliers', supplierRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Error Handling Middleware
 app.use(errorHandler);
